@@ -1,0 +1,23 @@
+import lightgbm as lgb
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+
+# Generate a sample dataset for regression
+X, y = make_regression(n_features=4, n_samples=1000, noise=0.1, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a LightGBM dataset
+lgb_train = lgb.Dataset(X_train, y_train)
+lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
+
+# Define the hyperparameters
+params = {'boosting_type': 'gbdt', 'objective': 'regression', 'metric': 'l2', 'learning_rate': 0.1, 'num_leaves': 31, 'max_depth': -1}
+
+# Train the model with early stopping
+model = lgb.train(params, lgb_train, num_boost_round=1000, valid_sets=[lgb_eval], early_stopping_rounds=50, verbose_eval=100)
+
+# Find the best iteration
+best_iteration = model.best_iteration
+
+# Print the best iteration
+print("Best iteration: ", best_iteration)
