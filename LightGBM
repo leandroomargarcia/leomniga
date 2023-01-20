@@ -1,0 +1,33 @@
+import lightgbm as lgb
+import numpy as np
+from sklearn.metrics import roc_auc_score, confusion_matrix
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+
+X, y = make_classification(n_classes=2, class_sep=2,
+                           weights=[0.1, 0.9], n_informative=3,
+                           n_redundant=1, flip_y=0, n_features=20,
+                           n_clusters_per_class=1, n_samples=1000,
+                           random_state=10)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a LightGBM dataset
+lgb_train = lgb.Dataset(X_train, y_train)
+lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
+
+# Define the custom loss function
+# a linear combination of TPR and FPR
+def custom_loss(y_true, y_pred):
+    y_pred = 1.0 / (1.0 + np.exp(-y_pred))
+    y_pred = np.round(y_pred)
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    tpr = tp / (tp + fn)
+    fpr = fp / (fp + tn)
+    alpha = 0.5 # adjust this parameter to control the balance between TPR and FPR
+    return 'custom_loss', - (alpha * tpr + (1 - alpha) * fpr), False
+
+params = {'objective': custom_loss, 'metric': 'l2', 'boosting_type': 'gbdt', 'learning_rate': 0.1, 'num_leaves': 31, 'max_depth': -1}
+
+# Train the model
+model = lgb.train(params, lgb_train, num_boost_round=1000, valid_sets=[lgb_eval], early_stopping_rounds=100, verbose_eval=100)
