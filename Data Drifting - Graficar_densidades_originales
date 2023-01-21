@@ -1,0 +1,124 @@
+# Esto es una transcripción de R a Python, no está probado, hay que probarlo y reparar algun error que puede surgir
+import pandas as pd
+import numpy as np
+import os
+from sklearn.model_selection import train_test_split
+from lightgbm import LGBMClassifier
+
+# Parameters of the script
+kdataset = "./exp/CA7060/dataset.csv.gz"
+kexperiment = "DR7130"
+
+#------------------------------------------------------------------------------
+
+graficar_campo  <- function( campo, periodos_analisis )
+{
+
+#quito de grafico las colas del 5% de las densidades
+tb_quantiles = pd.DataFrame(columns=["qmin", "qmax"])
+
+for periodo in periodos_analisis:
+    qu = dataset[dataset["foto_mes"] == periodo][campo].quantile([0.05, 0.95], interpolation='linear', axis=0, keepdims=True, ignore_na=True)
+    tb_quantiles = tb_quantiles.append(qu, ignore_index=True)
+    
+xxmin = tb_quantiles["qmin"].min()
+xxmax = tb_quantiles["qmax"].max()
+
+from scipy.stats import gaussian_kde
+
+yymax = 0
+for per in periodos_analisis:
+    den = gaussian_kde(dataset[dataset["foto_mes"] == per][campo].dropna())
+    mayor = max(den.evaluate(dataset[dataset["foto_mes"] == per][campo].dropna()))
+    if mayor > yymax:
+        yymax = mayor
+
+densidad_A = gaussian_kde(dataset[dataset["foto_mes"] == periodos_analisis[0]][campo].dropna())
+
+import matplotlib.pyplot as plt
+
+plt.plot(densidad_A.evaluate(np.linspace(xxmin, xxmax, 100)), color=GLOBAL_colores[1])
+plt.xlim(xxmin, xxmax)
+plt.ylim(0, yymax)
+plt.title(campo)
+
+for i in range(1, len(periodos_analisis)):
+    densidad_B = gaussian_kde(dataset[dataset["foto_mes"] == periodos_analisis[i]][campo].dropna())
+    plt.plot(densidad_B.evaluate(np.linspace(xxmin, xxmax, 100)), color=GLOBAL_colores[i])
+
+plt.legend(periodos_analisis, loc='upper right')
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+
+import os
+import lightgbm as lgb
+import pandas as pd
+
+#Aqui comienza el programa
+
+#set working directory
+os.chdir("~/buckets/b1/")
+
+#load the dataset
+dataset = pd.read_csv(kdataset)
+
+#create the experiment folder
+if not os.path.exists(f"./exp/{kexperimento}/"):
+    os.makedirs(f"./exp/{kexperimento}/")
+
+#set the working directory for the experiment
+os.chdir(f"./exp/{kexperimento}/")
+
+#create binary class
+dataset.loc[dataset["foto_mes"] <= 202103, "clase01"] = dataset["clase_ternaria"].apply(lambda x: 0 if x=="CONTINUA" else 1)
+
+#get the good columns
+campos_buenos = dataset.columns.difference(["clase_ternaria","clase01"])
+
+from lightgbm import Dataset
+dtrain = Dataset(data=dataset.loc[dataset['foto_mes'].isin([202101, 202102, 202103]), campos_buenos].to_numpy(), label=dataset.loc[dataset['foto_mes'].isin([202101, 202102, 202103]), 'clase01'])
+
+#dejo los datos en el formato que necesita LightGBM
+dtrain  = lgb.Dataset(data=dataset[foto_mes %in% [202101, 202102, 202103], campos_buenos], label=dataset[foto_mes %in% [202101, 202102, 202103], clase01])
+
+#genero el modelo
+#estos hiperparametros  salieron de una laaarga Optmizacion Bayesiana
+modelo = lgb.train(data=dtrain,
+                      params={'objective': 'binary',
+                                   'max_bin': 31,
+                                   'learning_rate': 0.018,
+                                   'num_iterations': 526,
+                                   'num_leaves': 1608,
+                                   'min_data_in_leaf': 5200,
+                                   'feature_fraction': 0.6,
+                                   'seed': 102191
+                                  })
+
+#get feature importances from a trained model
+model.fit(X_train, y_train)
+importances = model.feature_importances_
+
+#create a dataframe to hold feature importances
+feature_importances = pd.DataFrame(importances, index = X_train.columns, columns=['importance']).sort_values('importance', ascending=False)
+
+#exclude certain columns from the list
+exclude_cols = ["foto_mes", "clase_ternaria", "clase01"]
+campos_ordenados = feature_importances.index.difference(exclude_cols)
+
+#convert foto_mes to character
+dataset["foto_mes"] = dataset["foto_mes"].astype(str)
+
+#Convert to python:
+
+periodos_analisis = [202101, 202102, 202103, 202105]
+GLOBAL_colores = viridis_pal(len(periodos_analisis))
+
+pdf("densidades_orignales.pdf")
+
+for campo in campos_ordenados:
+print(campo, " ")
+graficar_campo(campo, periodos_analisis)
+
+plt.savefig("densidades_orignales.pdf")
+plt.close()
