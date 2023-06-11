@@ -8,8 +8,14 @@
     2- pip install streamlit
 5 - Una vez ejecutado se abrirá una pagina web desde chrome con nuestra APP que se encuentra local.
 '''
+import subprocess
 
-
+# Verificar si la biblioteca está instalada
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    # La biblioteca no está instalada, se procede a instalarla
+    subprocess.check_call(['pip', 'install', 'matplotlib'])
 
 import streamlit as st
 import matplotlib.pyplot as plt
