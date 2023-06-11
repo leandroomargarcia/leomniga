@@ -1,4 +1,3 @@
-
 '''Instrucciones como utilizar este codigo en la PC (no nse puede ejecutar desde COLAB)
 
 1 - Debemos tener instalado en la PC python y Anaconda o visual studio code.
@@ -8,15 +7,12 @@
     1- pip unistall streamlit
     2- pip install streamlit
 5 - Una vez ejecutado se abrirá una pagina web desde chrome con nuestra APP que se encuentra local.
-Tener en cuenta que el dataset debe estar alojado en la misma carpeta que se indica en la ruta.
 '''
 
-import subprocess
-import sys
 
-subprocess.check_call([sys.executable, "-m", "pip", "install", "scikit-learn"])
 
 import streamlit as st
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVC
@@ -24,8 +20,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
+from sklearn.metrics import confusion_matrix,ConfusionMatrixDisplay,roc_curve, RocCurveDisplay,precision_recall_curve, PrecisionRecallDisplay
 from sklearn.metrics import precision_score, recall_score 
+from sklearn.metrics import auc
+import matplotlib
+
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -50,20 +49,30 @@ def main():
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
         return x_train, x_test, y_train, y_test
     
-    def plot_metrics(metrics_list):
+    def plot_metrics(metrics_list, model, x_test, y_test, class_names):
         if 'Confusion Matrix' in metrics_list:
-            st.subheader("Confusion Matrix")
-            plot_confusion_matrix(model, x_test, y_test, display_labels = class_names)
+            y_pred = model.predict(x_test)
+            cm = confusion_matrix(y_test, y_pred)
+            disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+            disp.plot()
+            plt.title("Matriz de confusión")
             st.pyplot()
-        
+
         if 'ROC Curve' in metrics_list:
-            st.subheader("ROC curve")
-            plot_roc_curve(model, x_test, y_test)
+            y_scores = model.predict_proba(x_test)[:, 1]
+            fpr, tpr, thresholds = roc_curve(y_test, y_scores)
+            roc_auc = auc(fpr, tpr)
+            roc_disp = RocCurveDisplay(fpr=fpr, tpr=tpr, roc_auc=roc_auc)
+            roc_disp.plot()
+            plt.title("Curva ROC")
             st.pyplot()
 
         if 'Precision-Recall Curve' in metrics_list:
-            st.subheader("Precision-Recall Curve")
-            plot_precision_recall_curve(model, x_test, y_test)
+            y_scores = model.predict_proba(x_test)[:, 1]
+            precision, recall, thresholds = precision_recall_curve(y_test, y_scores)
+            pr_disp = PrecisionRecallDisplay(precision=precision, recall=recall)
+            pr_disp.plot()
+            plt.title("Curva de Precisión y Recall")
             st.pyplot()
     
     df = load_data()
@@ -84,14 +93,14 @@ def main():
 
         if st.sidebar.button("Classify", key='classify'):
             st.subheader("Support Vector Machine (SVM) Results")
-            model = SVC(C=C, kernel=kernel, gamma=gamma)
+            model = SVC(C=C, kernel=kernel, gamma=gamma, probability=True)
             model.fit(x_train, y_train)
             accuracy = model.score(x_test, y_test)
             y_pred = model.predict(x_test)
             st.write("Accuracy: ", accuracy.round(2))
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels = class_names).round(2))
-            plot_metrics(metrics)
+            plot_metrics(metrics, model, x_test, y_test, class_names)
 
 
     if classifier == 'Logistic Regression':
@@ -110,14 +119,14 @@ def main():
             st.write("Accuracy: ", accuracy.round(2))
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels = class_names).round(2))
-            plot_metrics(metrics)
+            plot_metrics(metrics, model, x_test, y_test, class_names)
 
     if classifier == 'Random Forest':
         st.sidebar.subheader("Model Hyperparameters")
         C = st.sidebar.number_input("C (Regularización parameter)", 0.01, 10.0, step=0.01, key='C')
         n_estimators = st.sidebar.number_input("The number of trees in the forest", 100, 5000, step=10, key='n_estimators')
         max_depth = st.sidebar.number_input("The maximum depth of the tree", 1, 20, step=1, key='max_depth')
-        bootstrap =st.sidebar.radio("Bootstrap samples when building trees", ('True','False'), key='bootstrap')
+        bootstrap = bool(st.sidebar.radio("Bootstrap samples when building trees", ('True', 'False'), key='bootstrap'))
         metrics = st.sidebar.multiselect("What metrics to plot?", ('Confusion Matrix', 'ROC Curve', 'Precision-Recall Curve'))
 
         if st.sidebar.button("Classify", key='classify'):
@@ -129,13 +138,8 @@ def main():
             st.write("Accuracy: ", accuracy.round(2))
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels = class_names).round(2))
-            plot_metrics(metrics)
+            plot_metrics(metrics, model, x_test, y_test, class_names)
     
-
-
-
-
-
 
 if __name__ == '__main__':
     main()
