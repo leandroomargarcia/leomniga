@@ -74,6 +74,9 @@ def main():
     df_vectors_test = modelo_vectorizer.transform([input_text]) # Predict using imported PKL vectorizer model
     modelo_LGBM = load_LGBM()  #Load model
     predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model 
+
+    show_input_text(predictions)
+    
     # Print the prediction
     if predictions[0]:
         show_input_text("The Description is Awesome") # show input text
