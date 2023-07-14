@@ -35,13 +35,14 @@ def main():
 
     @st.cache_resource()
     def load_LGBM():
-        with open('C:/Users/O003132/Downloads/modelo_entrenado.pkl', 'rb') as f:
+        with open('modelo_entrenado.pkl', 'rb') as f:
             modelo = pickle.load(f)
         return modelo
     
     @st.cache_resource()
     def load_vectorizer():
-        with open('C:/Users/O003132/Downloads/vectorizador.pkl', 'rb') as f:
+        with open('vectorizador.pkl', 'rb') as f:
+            with open('vectorizador.pkl', 'rb') as f:
             modelo = pickle.load(f)
         return modelo
     
