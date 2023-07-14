@@ -44,13 +44,7 @@ def main():
         with open('vectorizador.pkl', 'rb') as f:
             modelo = pickle.load(f)
         return modelo
-    
-    # Crear una caja de entrada de texto
-    @st.cache_resource()
-    def texto_input():
-        input_text = st.text_input("write here your Description Product")
-        return input_text
-    
+      
     # Mostrar el texto ingresado
     def show_input_text(input_text):
         st.write("The input text is: ", input_text)
@@ -73,7 +67,7 @@ def main():
     #lemmatizer  = WordNetLemmatizer()
     stopwords_en   = set(nltk.corpus.stopwords.words('english'))
 
-    input_text = texto_input() # load text input
+    input_text = st.text_input("write here your Description Product")  # load text input   
     show_input_text(input_text) # show input text
     filtered_tokens = preprocess_text(input_text) # preprocess text
     modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
