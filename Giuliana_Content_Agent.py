@@ -42,7 +42,6 @@ def main():
     @st.cache_resource()
     def load_vectorizer():
         with open('vectorizador.pkl', 'rb') as f:
-            with open('vectorizador.pkl', 'rb') as f:
             modelo = pickle.load(f)
         return modelo
     
