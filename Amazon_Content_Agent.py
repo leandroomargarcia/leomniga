@@ -73,26 +73,28 @@ def main():
     punctuation = string.punctuation
     stemmer = PorterStemmer() 
 
-    input_text = st.text_input("Write here your Description Product")  # load text input   
-    show_input_text(input_text) # show input text
-    X_clean = normalize(input_text) # preprocess text
-    modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
-    df_vectors_test = modelo_vectorizer.transform([X_clean]) # Predict using imported PKL vectorizer model
-    modelo_LGBM = load_LGBM()  #Load model
-    predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model
-    predictions = predictions[0]
-
-    threshold = 0.05
-    if predictions > threshold: 
-      predictions = 1 
-    else: predictions = 0
-
-    # Print the prediction
-    if predictions == 1:
-        show_input_text("The Description is Awesome") # show input text
-    else:
-        show_input_text("This Description is not so good....") # show input text
+    input_text = st.text_input("Write here your Description Product", "")  # load text input  
     
+    if input_text != "":
+        show_input_text(input_text) # show input text
+        X_clean = normalize(input_text) # preprocess text
+        modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
+        df_vectors_test = modelo_vectorizer.transform([X_clean]) # Predict using imported PKL vectorizer model
+        modelo_LGBM = load_LGBM()  #Load model
+        predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model
+        predictions = predictions[0]
+    
+        threshold = 0.05
+        if predictions > threshold: 
+          predictions = 1 
+        else: predictions = 0
+    
+        # Print the prediction
+        if predictions == 1:
+            show_input_text("The Description is Awesome") # show input text
+        else:
+            show_input_text("This Description is not so good....") # show input text
+        
 if __name__ == '__main__':
     main()
 
