@@ -35,7 +35,7 @@ def main():
 
     @st.cache_resource()
     def load_LGBM():
-        with open('modelo_entrenado.pkl', 'rb') as f:
+        with open('modelo_LGBM.pkl', 'rb') as f:
             modelo = pickle.load(f)
         return modelo
     
