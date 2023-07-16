@@ -77,7 +77,7 @@ def main():
     show_input_text(input_text) # show input text
     X_clean = normalize(input_text) # preprocess text
     modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
-    df_vectors_test = modelo_vectorizer.transform([input_text]) # Predict using imported PKL vectorizer model
+    df_vectors_test = modelo_vectorizer.transform([X_clean]) # Predict using imported PKL vectorizer model
     modelo_LGBM = load_LGBM()  #Load model
     predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model 
 
