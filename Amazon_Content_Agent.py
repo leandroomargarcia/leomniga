@@ -83,9 +83,9 @@ def main():
     predictions = predictions[0]
 
     threshold = 0.05
-    if prediccion > threshold: 
-      prediccion = 1 
-    else: prediccion = 0
+    if predictions > threshold: 
+      predictions = 1 
+    else: predictions = 0
 
     # Print the prediction
     if predictions == 1:
