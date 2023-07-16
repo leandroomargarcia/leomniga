@@ -24,7 +24,7 @@ import pickle
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-import string
+from nltk.stem import WordNetLemmatizer, PorterStemmer
 
 # Desactivar la advertencia de usar pyplot global
 st.set_option('deprecation.showPyplotGlobalUse', False)
