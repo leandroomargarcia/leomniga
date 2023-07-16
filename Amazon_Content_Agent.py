@@ -26,6 +26,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
+import lightgbm as lgb
 
 # Desactivar la advertencia de usar pyplot global
 st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -74,7 +75,7 @@ def main():
 
     input_text = st.text_input("Write here your Description Product")  # load text input   
     show_input_text(input_text) # show input text
-    X_clean = [normalize(doc) for doc in input_text] # preprocess text
+    X_clean = normalize(input_text) # preprocess text
     modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
     df_vectors_test = modelo_vectorizer.transform([input_text]) # Predict using imported PKL vectorizer model
     modelo_LGBM = load_LGBM()  #Load model
