@@ -31,7 +31,7 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 
 def main():
     st.title("Content Corrector Specialist Amazon Web App")
-    st.markdown("Are you shour about your Descripction Product? Let me help you review it and giving you my professional suggestion")
+    st.markdown("Are you sure about your Descripction Product? Let me help you review it and giving you my professional suggestion")
 
     @st.cache_resource()
     def load_LGBM():
@@ -50,11 +50,13 @@ def main():
         st.write("The input text is: ", input_text)
 
     @st.cache_resource()
-    def preprocess_text(text):
+    def normalize(text):
         text = text.lower()  # Convert text to lowercase
-        text = text.translate(str.maketrans('', '', string.punctuation))  # Remove punctuation
         tokens = word_tokenize(text)  # Tokenize the text into words
-        filtered_tokens = [word for word in tokens if word not in stopwords_en]  # Remove stop words
+        tokens = [token for token in tokens if token.isalnum() and token not in stopwords_en]  # Remove stop words
+        lemmatizer = WordNetLemmatizer()
+        lemmas = [lemmatizer.lemmatize(token) for token in tokens]
+        preprocessed_text = ' '.join(lemmas)
         return filtered_tokens
     
     # Main
@@ -66,19 +68,24 @@ def main():
     ## Load Modules
     #lemmatizer  = WordNetLemmatizer()
     stopwords_en   = set(nltk.corpus.stopwords.words('english'))
+    punctuation = string.punctuation
+    stemmer = PorterStemmer() 
 
-    input_text = st.text_input("write here your Description Product")  # load text input   
+    input_text = st.text_input("Write here your Description Product")  # load text input   
     show_input_text(input_text) # show input text
-    filtered_tokens = preprocess_text(input_text) # preprocess text
+    X_clean = [normalize(doc) for doc in input_text] # preprocess text
     modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
     df_vectors_test = modelo_vectorizer.transform([input_text]) # Predict using imported PKL vectorizer model
     modelo_LGBM = load_LGBM()  #Load model
     predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model 
 
-    show_input_text(predictions)
-    
+    threshold = 0.05
+    if prediccion > threshold: 
+      prediccion = 1 
+    else: prediccion = 0
+
     # Print the prediction
-    if predictions[0]:
+    if predictions == 1:
         show_input_text("The Description is Awesome") # show input text
     else:
         show_input_text("This Description is not so good....") # show input text
