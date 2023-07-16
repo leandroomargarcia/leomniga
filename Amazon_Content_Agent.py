@@ -59,7 +59,7 @@ def main():
         lemmatizer = WordNetLemmatizer()
         lemmas = [lemmatizer.lemmatize(token) for token in tokens]
         preprocessed_text = ' '.join(lemmas)
-        return filtered_tokens
+        return preprocessed_text
     
     # Main
     nltk.download('punkt')
