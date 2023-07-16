@@ -6,4 +6,5 @@ scikit-learn==1.2.2
 streamlit==1.23.1
 nltk==3.7
 lightgbm==3.3.1
+openai==0.27.0
 
