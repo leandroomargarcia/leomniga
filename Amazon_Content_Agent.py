@@ -17,7 +17,8 @@ try:
 except ImportError:
     # La biblioteca no está instalada, se procede a instalarla
     subprocess.check_call(['pip', 'install', 'matplotlib'])
-
+    
+import string
 import streamlit as st
 import pandas as pd
 import pickle
