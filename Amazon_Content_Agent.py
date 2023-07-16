@@ -100,25 +100,25 @@ def main():
     # Give a reviewed description of the product using chatGPT 4
     openai_key = st.text_input("Write here your Open AI Key", "")  # load openaikey 
     openai.api_key = openai_key
-
-    concent = 'You are a Margeting redactor content specialist. Your goal is remake the product Description that I give you. Lets include some of the words in the follow list.\
-    Do a short text without any aditionally explanation about it or any comment. I need you to improve this description for getting more sales'
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-          {"role": "system", "content": concent},
-          {"role": "user", "content": input_text}
-        ],
-        temperature=.5,
-        max_tokens=200,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    prompt_response = response["choices"][0]["message"]['content'].strip()
-    request = 'Description Product: ' + prompt_response
-    st.text(request)
+    if openai_key != "":
+        concent = 'You are a Margeting redactor content specialist. Your goal is remake the product Description that I give you. Lets include some of the words in the follow list.\
+        Do a short text without any aditionally explanation about it or any comment. I need you to improve this description for getting more sales'
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+              {"role": "system", "content": concent},
+              {"role": "user", "content": input_text}
+            ],
+            temperature=.5,
+            max_tokens=200,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        prompt_response = response["choices"][0]["message"]['content'].strip()
+        request = 'Description Product: ' + prompt_response
+        st.text(request)
     
 if __name__ == '__main__':
     main()
