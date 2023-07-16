@@ -98,7 +98,7 @@ def main():
             
     # Give a reviewed description of the product using chatGPT 4
     openai_key = st.text_input("Write here your Open AI Key", "")  # load openaikey 
-    openai.api_key = "openai_key"
+    openai.api_key = openai_key
 
     concent = 'You are a Margeting redactor content specialist. Your goal is remake the product Description that I give you. Lets include some of the words in the follow list.\
     Do a short text without any aditionally explanation about it or any comment. I need you to improve this description for getting more sales'
