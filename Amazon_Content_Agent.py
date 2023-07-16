@@ -79,7 +79,8 @@ def main():
     modelo_vectorizer = load_vectorizer() # Convert the preprocessed text into a TF-IDF vector
     df_vectors_test = modelo_vectorizer.transform([X_clean]) # Predict using imported PKL vectorizer model
     modelo_LGBM = load_LGBM()  #Load model
-    predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model 
+    predictions = modelo_LGBM.predict(df_vectors_test) # Predict using imported PKL LGBM model
+    predictions = predictions[0]
 
     threshold = 0.05
     if prediccion > threshold: 
