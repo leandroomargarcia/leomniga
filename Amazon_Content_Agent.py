@@ -27,6 +27,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 import lightgbm as lgb
+import openai
 
 # Desactivar la advertencia de usar pyplot global
 st.set_option('deprecation.showPyplotGlobalUse', False)
