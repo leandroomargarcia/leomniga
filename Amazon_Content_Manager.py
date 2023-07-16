@@ -33,7 +33,7 @@ import openai
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 def main():
-    st.title("✨Content Corrector Specialist Amazon Web App")
+    st.title("✨Amazon Content Correction Specialist Web App")
     st.markdown("Are you sure about your Descripction Product? Let me help you review it and giving you my professional suggestion")
 
     @st.cache_resource()
