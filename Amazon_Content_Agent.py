@@ -118,11 +118,7 @@ def main():
         )
         prompt_response = response["choices"][0]["message"]['content'].strip()
         request = 'Description Product: ' + prompt_response
-        #st.text(request)
-        # Primer reservas un espacio en pantalla con st.empty()
-        placeholder = st.empty()
-        # Más adelante en tu código, puedes usar esa referencia para llenar el espacio reservado
-        placeholder.text(request)
+        st.text(request)
     
 if __name__ == '__main__':
     main()
