@@ -108,7 +108,7 @@ def main():
         model="gpt-4",
         messages=[
           {"role": "system", "content": concent},
-          {"role": "user", "content": prompt_request}
+          {"role": "user", "content": input_text}
         ],
         temperature=.5,
         max_tokens=200,
