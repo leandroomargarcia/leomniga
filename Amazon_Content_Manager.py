@@ -101,8 +101,8 @@ def main():
     openai_key = st.text_input("Write here your Open AI Key", "")  # load openaikey 
     openai.api_key = openai_key
     if openai_key != "":
-        concent = 'You are a Margeting redactor content specialist. Your goal is remake the product Description that I give you. Lets include some of the words in the follow list.\
-        Do a short text without any aditionally explanation about it or any comment. I need you to improve this description for getting more sales'
+        concent = 'You are a Margeting redactor content specialist. Your goal is redo the product Description that I give you.\
+        Do a short text without any aditionally explanation about it or any comment. I need you to improve this description to get more sales'
         
         response = openai.ChatCompletion.create(
             model="gpt-4",
