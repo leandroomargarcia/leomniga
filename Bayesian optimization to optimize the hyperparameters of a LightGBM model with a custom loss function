@@ -41,7 +41,7 @@ def lgb_evaluate(learning_rate, num_leaves, min_child_samples, colsample_bytree,
               'metric': 'custom_loss',
               'verbose': -1}
 
-    cv_result = lgb.cv(params, lgb_train, num_boost_round=1000, nfold=5, early_stopping_rounds=100, verbose_eval=100)
+    cv_result = lgb.cv(params, lgb_train, num_boost_round=1000, nfold=5)
 
     return -cv_result['custom_loss-mean'][-1]
 
