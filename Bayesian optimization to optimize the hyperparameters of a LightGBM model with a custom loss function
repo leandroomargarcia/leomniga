@@ -23,7 +23,7 @@ def custom_loss(y_true, y_pred):
     y_pred = 1.0 / (1.0 + np.exp(-y_pred))
     y_pred = np.round(y_pred)
     tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
-    tpr = tp /
+    tpr = tp / (tp + fn)
     fpr = fp / (fp + tn)
     alpha = 0.5 # adjust this parameter to control the balance between TPR and FPR
     return 'custom_loss', - (alpha * tpr + (1 - alpha) * fpr), False
